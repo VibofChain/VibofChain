@@ -1,0 +1,33 @@
+# /etc/conf.d/vibofchaind: config file for /etc/init.d/vibofchaind
+
+# Config file location
+#VIBOFCHAIND_CONFIGFILE="/etc/vibofchain/vibofchain.conf"
+
+# What directory to write pidfile to?  (created and owned by $VIBOFCHAIND_USER)
+#VIBOFCHAIND_PIDDIR="/var/run/vibofchaind"
+
+# What filename to give the pidfile
+#VIBOFCHAIND_PIDFILE="${VIBOFCHAIND_PIDDIR}/vibofchaind.pid"
+
+# Where to write vibofchaind data (be mindful that the blockchain is large)
+#VIBOFCHAIND_DATADIR="/var/lib/vibofchaind"
+
+# User and group to own vibofchaind process
+#VIBOFCHAIND_USER="vibofchain"
+#VIBOFCHAIND_GROUP="vibofchain"
+
+# Path to vibofchaind executable
+#VIBOFCHAIND_BIN="/usr/bin/vibofchaind"
+
+# Nice value to run vibofchaind under
+#VIBOFCHAIND_NICE=0
+
+# Additional options (avoid -conf and -datadir, use flags above)
+#VIBOFCHAIND_OPTS=""
+
+# The timeout in seconds OpenRC will wait for vibofchaind to terminate
+# after a SIGTERM has been raised.
+# Note that this will be mapped as argument to start-stop-daemon's
+# '--retry' option, which means you can specify a retry schedule
+# here. For more information see man 8 start-stop-daemon.
+VIBOFCHAIND_SIGTERM_TIMEOUT=60

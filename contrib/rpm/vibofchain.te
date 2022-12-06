@@ -1,0 +1,81 @@
+policy_module(vibofchain, 1.100.1)
+
+########################################
+#
+# Declarations
+#
+
+type vibofchain_t;
+type vibofchain_exec_t;
+init_daemon_domain(vibofchain_t, vibofchain_exec_t)
+
+permissive vibofchain_t;
+
+type vibofchain_initrc_exec_t;
+init_script_file(vibofchain_initrc_exec_t)
+
+type vibofchain_conf_t;
+files_type(vibofchain_conf_t)
+
+type vibofchain_var_lib_t;
+files_type(vibofchain_var_lib_t)
+
+type vibofchain_var_run_t;
+files_type(vibofchain_var_run_t)
+
+type vibofchain_port_t;
+corenet_port(vibofchain_port_t)
+
+########################################
+#
+# vibofchain local policy
+#
+allow vibofchain_t self:process { fork };
+
+allow vibofchain_t self:fifo_file rw_fifo_file_perms;
+allow vibofchain_t self:unix_stream_socket create_stream_socket_perms;
+
+manage_dirs_pattern(vibofchain_t, vibofchain_conf_t, vibofchain_conf_t)
+manage_files_pattern(vibofchain_t, vibofchain_conf_t, vibofchain_conf_t)
+
+manage_dirs_pattern(vibofchain_t, vibofchain_var_lib_t, vibofchain_var_lib_t)
+manage_files_pattern(vibofchain_t, vibofchain_var_lib_t, vibofchain_var_lib_t)
+files_var_lib_filetrans(vibofchain_t, vibofchain_var_lib_t, { dir file })
+
+manage_dirs_pattern(vibofchain_t, vibofchain_var_run_t, vibofchain_var_run_t)
+manage_files_pattern(vibofchain_t, vibofchain_var_run_t, vibofchain_var_run_t)
+
+sysnet_dns_name_resolve(vibofchain_t)
+corenet_all_recvfrom_unlabeled(vibofchain_t)
+
+allow vibofchain_t self:tcp_socket create_stream_socket_perms;
+corenet_tcp_sendrecv_generic_if(vibofchain_t)
+corenet_tcp_sendrecv_generic_node(vibofchain_t)
+corenet_tcp_sendrecv_all_ports(vibofchain_t)
+corenet_tcp_bind_generic_node(vibofchain_t)
+
+gen_require(`
+    type vibofchain_port_t;
+')
+allow vibofchain_t vibofchain_port_t:tcp_socket name_bind;
+
+gen_require(`
+    type vibofchain_port_t;
+')
+allow vibofchain_t vibofchain_port_t:tcp_socket name_connect;
+
+domain_use_interactive_fds(vibofchain_t)
+
+files_read_etc_files(vibofchain_t)
+
+miscfiles_read_localization(vibofchain_t)
+
+sysnet_dns_name_resolve(vibofchain_t)
+
+allow vibofchain_t vibofchain_exec_t:file execute_no_trans;
+allow vibofchain_t self:process setsched;
+corecmd_exec_ls(vibofchain_t)
+corenet_tcp_connect_http_port(vibofchain_t)
+dev_read_urand(vibofchain_t)
+fs_getattr_xattr_fs(vibofchain_t)
+kernel_read_system_state(vibofchain_t)

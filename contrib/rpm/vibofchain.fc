@@ -1,0 +1,8 @@
+/usr/bin/vibofchain-cli		--	gen_context(system_u:object_r:vibofchain_exec_t,s0)
+/usr/sbin/vibofchaind		--	gen_context(system_u:object_r:vibofchain_exec_t,s0)
+/usr/lib(64)?/vibofchain/vibofchaind		--	gen_context(system_u:object_r:vibofchain_exec_t,s0)
+
+/etc/vibofchain(/.*)?		gen_context(system_u:object_r:vibofchain_conf_t,s0)
+/var/lib/vibofchain(/.*)?		gen_context(system_u:object_r:vibofchain_var_lib_t,s0)
+
+(/var)?/run/vibofchaind(/.*)?   gen_context(system_u:object_r:vibofchain_var_run_t,s0)

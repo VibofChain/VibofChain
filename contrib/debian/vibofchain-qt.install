@@ -1,0 +1,6 @@
+usr/local/bin/vibofchain-qt usr/bin
+share/pixmaps/vibofchain32.xpm usr/share/pixmaps
+share/pixmaps/vibofchain16.xpm usr/share/pixmaps
+share/pixmaps/vibofchain128.png usr/share/pixmaps
+debian/vibofchain-qt.desktop usr/share/applications
+debian/vibofchain-qt.protocol usr/share/kde4/services/

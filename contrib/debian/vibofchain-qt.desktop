@@ -1,0 +1,13 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=VibofChain Core
+Comment=Connect to the VibofChain P2P Network
+Comment[de]=Verbinde mit dem VibofChain peer-to-peer Netzwerk
+Comment[fr]=VibofChain, monnaie virtuelle cryptographique pair à pair
+Comment[tr]=VibofChain, eşten eşe kriptografik sanal para birimi
+Exec=vibofchain-qt %u
+Terminal=false
+Type=Application
+Icon=vibofchain128
+MimeType=x-scheme-handler/vibofchain;
+Categories=Office;Finance;

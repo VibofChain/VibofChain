@@ -1,0 +1,92 @@
+#!/sbin/runscript
+
+# backward compatibility for existing gentoo layout 
+#
+if [ -d "/var/lib/vibofchain/.vibofchain" ]; then
+	VIBOFCHAIND_DEFAULT_DATADIR="/var/lib/vibofchain/.vibofchain"
+else
+	VIBOFCHAIND_DEFAULT_DATADIR="/var/lib/vibofchaind"
+fi
+
+VIBOFCHAIND_CONFIGFILE=${VIBOFCHAIND_CONFIGFILE:-/etc/vibofchain/vibofchain.conf}
+VIBOFCHAIND_PIDDIR=${VIBOFCHAIND_PIDDIR:-/var/run/vibofchaind}
+VIBOFCHAIND_PIDFILE=${VIBOFCHAIND_PIDFILE:-${VIBOFCHAIND_PIDDIR}/vibofchaind.pid}
+VIBOFCHAIND_DATADIR=${VIBOFCHAIND_DATADIR:-${VIBOFCHAIND_DEFAULT_DATADIR}}
+VIBOFCHAIND_USER=${VIBOFCHAIND_USER:-${VIBOFCHAIN_USER:-vibofchain}}
+VIBOFCHAIND_GROUP=${VIBOFCHAIND_GROUP:-vibofchain}
+VIBOFCHAIND_BIN=${VIBOFCHAIND_BIN:-/usr/bin/vibofchaind}
+VIBOFCHAIND_NICE=${VIBOFCHAIND_NICE:-${NICELEVEL:-0}}
+VIBOFCHAIND_OPTS="${VIBOFCHAIND_OPTS:-${VIBOFCHAIN_OPTS}}"
+
+name="VibofChain Core Daemon"
+description="VibofChain cryptocurrency P2P network daemon"
+
+command="/usr/bin/vibofchaind"
+command_args="-pid=\"${VIBOFCHAIND_PIDFILE}\" \
+		-conf=\"${VIBOFCHAIND_CONFIGFILE}\" \
+		-datadir=\"${VIBOFCHAIND_DATADIR}\" \
+		-daemon \
+		${VIBOFCHAIND_OPTS}"
+
+required_files="${VIBOFCHAIND_CONFIGFILE}"
+start_stop_daemon_args="-u ${VIBOFCHAIND_USER} \
+			-N ${VIBOFCHAIND_NICE} -w 2000"
+pidfile="${VIBOFCHAIND_PIDFILE}"
+
+# The retry schedule to use when stopping the daemon. Could be either
+# a timeout in seconds or multiple signal/timeout pairs (like
+# "SIGKILL/180 SIGTERM/300")
+retry="${VIBOFCHAIND_SIGTERM_TIMEOUT}"
+
+depend() {
+	need localmount net
+}
+
+# verify
+# 1) that the datadir exists and is writable (or create it)
+# 2) that a directory for the pid exists and is writable
+# 3) ownership and permissions on the config file
+start_pre() {
+	checkpath \
+	-d \
+	--mode 0750 \
+	--owner "${VIBOFCHAIND_USER}:${VIBOFCHAIND_GROUP}" \
+	"${VIBOFCHAIND_DATADIR}"
+
+	checkpath \
+	-d \
+	--mode 0755 \
+	--owner "${VIBOFCHAIND_USER}:${VIBOFCHAIND_GROUP}" \
+	"${VIBOFCHAIND_PIDDIR}"
+
+	checkpath -f \
+	-o ${VIBOFCHAIND_USER}:${VIBOFCHAIND_GROUP} \
+	-m 0660 \
+	${VIBOFCHAIND_CONFIGFILE}
+
+	checkconfig || return 1
+}
+
+checkconfig()
+{
+	if ! grep -qs '^rpcpassword=' "${VIBOFCHAIND_CONFIGFILE}" ; then
+		eerror ""
+		eerror "ERROR: You must set a secure rpcpassword to run vibofchaind."
+		eerror "The setting must appear in ${VIBOFCHAIND_CONFIGFILE}"
+		eerror ""
+		eerror "This password is security critical to securing wallets "
+		eerror "and must not be the same as the rpcuser setting."
+		eerror "You can generate a suitable random password using the following "
+		eerror "command from the shell:"
+		eerror ""
+		eerror "bash -c 'tr -dc a-zA-Z0-9 < /dev/urandom | head -c32 && echo'"
+		eerror ""
+		eerror "It is recommended that you also set alertnotify so you are "
+		eerror "notified of problems:"
+		eerror ""
+		eerror "ie: alertnotify=echo %%s | mail -s \"VibofChain Alert\"" \
+			"admin@foo.com"
+		eerror ""
+		return 1
+	fi
+}

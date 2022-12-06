@@ -1,0 +1,11 @@
+[Protocol]
+exec=vibofchain-qt '%u'
+protocol=vibofchain
+input=none
+output=none
+helper=true
+listing=
+reading=false
+writing=false
+makedir=false
+deleting=false
